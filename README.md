@@ -23,6 +23,7 @@ Restart Visual Studio Code and the issue should be fixed.
 
 # 2. Clone the project (if not already cloned)
 git clone https://github.com/zackwhalen1/CEN3031_Fantastic_Four.git
+
 cd CEN3031_Fantastic_Four/unicalendar
 
 # 3. Install dependencies 
