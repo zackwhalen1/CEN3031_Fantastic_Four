@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 function Login() {
   const [username, setUsername] = useState(''); //Doesn't do anything right now
   const [password, setPassword] = useState(''); //Doesn't do anything right now
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate(); //Object that handles changing web pages
+  const { login } = useAuth();
 
   const handleLogin = (e) => { //Function that changes to the calendar view when the login button is pressed
   e.preventDefault();
-  navigate('/calendar');
+  setErrorMessage('');
+  login(username, password)
+    .then(() => { navigate('/calendar'); })
+    .catch(error => setErrorMessage(error.message));
 };
 
   return (
@@ -20,7 +26,8 @@ function Login() {
        {/* The Login information*/}
       <h3>Login</h3>
       <form onSubmit={handleLogin}>
-
+        {/* Error message display */}
+        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         {/* Username entry */}
         <div style={{ marginBottom: '10px' }}>
           <input 
