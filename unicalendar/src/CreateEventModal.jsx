@@ -38,6 +38,13 @@ const CreateEventModal = ({ onClose, onSave, defaultDate, editingEvent, position
                     top: position?.y ?? '50%',
                     left: position?.x ?? '50%',
                     transform: 'translate(-50%, -50%)',
+                    backgroundColor: 'white',
+                    border: '2px solid #444',
+                    borderRadius: '8px',
+                    padding: '20px',
+                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                    minWidth: '300px',
+                    maxWidth: '400px'
                 }} // clicking inside does not close modal //
             >
                 <h3>{editingEvent ? "Edit Event" : "Create New Event"}</h3>
