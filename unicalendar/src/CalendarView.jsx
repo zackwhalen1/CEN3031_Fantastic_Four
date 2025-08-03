@@ -78,12 +78,13 @@ function CalendarView() {
     return dateA - dateB;
   });
 
-  // when a user clicks a day
-  const handleDayClick = (day, event) => {
+  // when a user double clicks a day
+  const handleDayDoubleClick = (day, event) => {
     if (!day) return;
     const clickedDate = new Date(year, month, day);
     setSelectedDate(clickedDate);
-    setModalPosition({ x: event.clientX, y: event.clientY });
+    setEditingEvent(null); // Ensure we're creating a new event, not editing
+    setModalPosition(null); // Center the modal instead of positioning at click location
     setShowModal(true);
   };
 
@@ -122,44 +123,60 @@ function CalendarView() {
   //////
 
   return (
-    <div style={{
-        border: '2px solid #444',
-        padding: '10px',
-        marginTop: '10px',
-        borderRadius: '8px'
-      }}>
-      {/*The above div style is for the box surrounding the whole calendar*/}
-
-      <div style={{
-        border: '2px solid #444',
-        padding: '10px',
-        marginTop: '10px',
-        borderRadius: '8px'
-      }}>
-      {/* This is the Search Feature */}
-      <h2>Search</h2>
-      <SearchEvents 
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        searchType={searchType}
-        setSearchType={setSearchType}
-      />
-      </div>
+    <div>
+      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Unicalendar</h1>
       
-      {/*This is the filtered events. It starts with the total list of testEvents and then as you search it filters them out.*/}
-      <div style={{
-        border: '2px solid #444',
-        padding: '10px',
-        marginTop: '10px',
-        borderRadius: '8px'
-      }}>
-        <h4>Calender Events</h4>
-        {filteredEvents.map((event, index) => (
-          <div key={index}>
-            {event.date}: {event.month}: {event.startTime}: <span style={{ color: event.color }}>{event.title}</span>
+      {/* Main container with two columns */}
+      <div style={{ display: 'flex', gap: '20px' }}>
+        
+        {/* Left sidebar with Search and Calendar Events */}
+        <div style={{
+          flex: '0 0 350px', // Fixed width for left sidebar
+          border: '2px solid #444',
+          padding: '15px',
+          borderRadius: '8px',
+          height: 'fit-content'
+        }}>
+          
+          {/* Search Feature */}
+          <div style={{
+            border: '2px solid #444',
+            padding: '10px',
+            marginBottom: '15px',
+            borderRadius: '8px'
+          }}>
+            <h2>Search</h2>
+            <SearchEvents 
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              searchType={searchType}
+              setSearchType={setSearchType}
+            />
           </div>
-        ))}
-      </div>
+          
+          {/* Calendar Events */}
+          <div style={{
+            border: '2px solid #444',
+            padding: '10px',
+            borderRadius: '8px'
+          }}>
+            <h4>Calendar Events</h4>
+            {filteredEvents.map((event, index) => (
+              <div key={index}>
+                {event.date}: {event.month}: {event.startTime}: <span style={{ color: event.color }}>{event.title}</span>
+              </div>
+            ))}
+          </div>
+          
+        </div>
+        
+        {/* Right side with calendar */}
+        <div style={{
+          flex: '1', // Takes up remaining space
+          border: '2px solid #444',
+          padding: '10px',
+          borderRadius: '8px'
+        }}>
 
       <h2>
         {/*This displays the current date*/} 
@@ -194,10 +211,10 @@ function CalendarView() {
         {calendarCells.map((day, index) => (
           <div 
             key={index} 
-            onClick={(e) => handleDayClick(day, e)}
+            onDoubleClick={(e) => handleDayDoubleClick(day, e)}
             onContextMenu={(e) => {
               e.preventDefault();
-              handleDayClick(day, e);
+              handleDayDoubleClick(day, e);
             }}
             style={{
               height: '100px',
@@ -255,6 +272,9 @@ function CalendarView() {
             onSave={handleSaveEvent}
           />
         )}
+        </div>
+        
+      </div>
     </div>
   );
 }
