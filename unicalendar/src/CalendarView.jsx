@@ -56,7 +56,8 @@ function CalendarView() {
   ];
 
   // Filtering events by what you would like to search by
-  const filteredEvents = testEvents.filter(event => {
+  const allEvents = [...testEvents, ...events];
+  const filteredEvents = allEvents.filter(event => {
     const query = searchQuery.toLowerCase();
     if (searchType === 'title') {
       return event.title.toLowerCase().includes(query);
@@ -70,6 +71,11 @@ function CalendarView() {
       return event.startTime.includes(query);
     }
     return false;
+  }).sort((a, b) => {
+    // Sort by date in chronological order
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    return dateA - dateB;
   });
 
   // when a user clicks a day
@@ -147,10 +153,10 @@ function CalendarView() {
         marginTop: '10px',
         borderRadius: '8px'
       }}>
-        <h4>Search Results</h4>
+        <h4>Calender Events</h4>
         {filteredEvents.map((event, index) => (
           <div key={index}>
-            {event.date}: {event.month}: {event.startTime}: {event.title} ({event.color})
+            {event.date}: {event.month}: {event.startTime}: <span style={{ color: event.color }}>{event.title}</span>
           </div>
         ))}
       </div>
