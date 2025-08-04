@@ -1,6 +1,7 @@
 import { useState } from 'react'; 
 import SearchEvents from './SearchEvents';
 import CreateEventModal from './CreateEventModal';
+import DayView from './DayView';
 
 function CalendarView() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -44,6 +45,9 @@ function CalendarView() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [editingEvent, setEditingEvent] = useState(null);
   const [modalPosition, setModalPosition] = useState(null);
+  const [showDayView, setShowDayView] = useState(false);
+  const [dayViewDate, setDayViewDate] = useState(null);
+  const [prefilledStartTime, setPrefilledStartTime] = useState('');
 
   // These are some made up events that I'm using to base how the sorting will work
   const testEvents = [
@@ -82,10 +86,8 @@ function CalendarView() {
   const handleDayDoubleClick = (day, event) => {
     if (!day) return;
     const clickedDate = new Date(year, month, day);
-    setSelectedDate(clickedDate);
-    setEditingEvent(null); // Ensure we're creating a new event, not editing
-    setModalPosition(null); // Center the modal instead of positioning at click location
-    setShowModal(true);
+    setDayViewDate(clickedDate);
+    setShowDayView(true);
   };
 
   // Add event or update if editing
@@ -117,6 +119,35 @@ function CalendarView() {
   const startEditEvent = (event) => {
     setEditingEvent(event);
     setModalPosition(null);
+    setShowModal(true);
+  };
+
+  // Day view handlers
+  const handleCloseDayView = () => {
+    setShowDayView(false);
+    setDayViewDate(null);
+  };
+
+  const handleDayViewEdit = (event) => {
+    setShowDayView(false);
+    setEditingEvent(event);
+    setModalPosition(null);
+    setShowModal(true);
+  };
+
+  const handleDayViewDelete = (event) => {
+    deleteEvent(event);
+  };
+
+  const handleDayViewDateChange = (newDate) => {
+    setDayViewDate(newDate);
+  };
+
+  const handleDayViewCreateEvent = (date, startTime) => {
+    setSelectedDate(date);
+    setEditingEvent(null);
+    setModalPosition(null);
+    setPrefilledStartTime(startTime);
     setShowModal(true);
   };
 
@@ -265,11 +296,27 @@ function CalendarView() {
             defaultDate={selectedDate}
             editingEvent={editingEvent}
             position={modalPosition}
+            prefilledStartTime={prefilledStartTime}
             onClose={() => {
               setShowModal(false);
               setEditingEvent(null);
+              setPrefilledStartTime('');
             }}
             onSave={handleSaveEvent}
+          />
+        )}
+
+        {/* Day View */}
+        {showDayView && dayViewDate && (
+          <DayView
+            selectedDate={dayViewDate}
+            events={events}
+            testEvents={testEvents}
+            onClose={handleCloseDayView}
+            onEditEvent={handleDayViewEdit}
+            onDeleteEvent={handleDayViewDelete}
+            onDateChange={handleDayViewDateChange}
+            onCreateEvent={handleDayViewCreateEvent}
           />
         )}
         </div>
