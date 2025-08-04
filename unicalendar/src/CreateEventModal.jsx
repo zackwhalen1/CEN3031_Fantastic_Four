@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const CreateEventModal = ({ onClose, onSave, defaultDate, editingEvent, position }) => {
+const CreateEventModal = ({ onClose, onSave, defaultDate, editingEvent, position, prefilledStartTime }) => {
     const [title, setTitle] = useState("");
     const [date, setDate] = useState("");
     const [startTime, setStartTime] = useState("");
@@ -14,37 +14,75 @@ const CreateEventModal = ({ onClose, onSave, defaultDate, editingEvent, position
             setDate(editingEvent.date || "");
             setStartTime(editingEvent.startTime || "");
             setEndTime(editingEvent.endTime || "");
-        }   else if (defaultDate) {
+            setColor(editingEvent.color || "");
+        } else if (defaultDate) {
             // For creating a new event, prefill the date only
-            setDate(defaultDate.toISOString().split("T")[0]);
+            // Use local date formatting to avoid timezone issues
+            const year = defaultDate.getFullYear();
+            const month = String(defaultDate.getMonth() + 1).padStart(2, '0');
+            const day = String(defaultDate.getDate()).padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
+            setDate(formattedDate);
+            // If we have a prefilled start time, use it
+            if (prefilledStartTime) {
+                setStartTime(prefilledStartTime);
+            }
         }
-    },      [editingEvent, defaultDate]);
+    }, [editingEvent, defaultDate, prefilledStartTime]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave({ title, date, startTime, endTime, color });
+        // Convert date from YYYY-MM-DD to MM/DD/YYYY format to match existing events
+        const dateParts = date.split('-');
+        const formattedDate = `${dateParts[1]}/${dateParts[2]}/${dateParts[0]}`;
+        
+        // Create date object from the original input date to avoid timezone issues
+        const year = parseInt(dateParts[0]);
+        const month = parseInt(dateParts[1]) - 1; // month is 0-indexed
+        const day = parseInt(dateParts[2]);
+        const dateObj = new Date(year, month, day);
+        const monthName = dateObj.toLocaleString('default', { month: 'long' });
+        
+        onSave({ 
+            title, 
+            date: formattedDate, 
+            month: monthName,
+            startTime, 
+            endTime, 
+            color 
+        });
     };
 
     return (
         <div 
             className="modal-overlay"
             onClick={onClose} // clicking background closes modal //
+            style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: 2000
+            }}
         >
             <div 
                 className="modal-content"
                 onClick={(e) => e.stopPropagation()}
                 style={{
-                    position: 'fixed',
-                    top: position?.y ?? '50%',
-                    left: position?.x ?? '50%',
-                    transform: 'translate(-50%, -50%)',
                     backgroundColor: 'white',
                     border: '2px solid #444',
                     borderRadius: '8px',
                     padding: '20px',
                     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
                     minWidth: '300px',
-                    maxWidth: '400px'
+                    maxWidth: '400px',
+                    position: 'relative',
+                    zIndex: 2001
                 }} // clicking inside does not close modal //
             >
                 <h3>{editingEvent ? "Edit Event" : "Create New Event"}</h3>
