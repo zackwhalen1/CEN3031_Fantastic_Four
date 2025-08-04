@@ -2,33 +2,44 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
+// NEW: Firestore imports to fetch user role
+import { db } from './firebase';
+import { doc, getDoc } from 'firebase/firestore';
+
 function Login() {
-  const [username, setUsername] = useState(''); //Doesn't do anything right now
-  const [password, setPassword] = useState(''); //Doesn't do anything right now
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const navigate = useNavigate(); //Object that handles changing web pages
+  const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleLogin = (e) => { //Function that changes to the calendar view when the login button is pressed
-  e.preventDefault();
-  setErrorMessage('');
-  login(username, password)
-    .then(() => { navigate('/calendar'); })
-    .catch(error => setErrorMessage(error.message));
-};
+  // MODIFIED: This function now fetches role after login
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+    try {
+      const userCred = await login(username, password); // log in via Firebase Auth
+
+      // NEW: Fetch the user's role from Firestore
+      const userDoc = await getDoc(doc(db, "users", userCred.user.uid));
+      const role = userDoc.exists() ? userDoc.data().role : 'unknown';
+
+      console.log("Logged in as:", role); // For debugging / confirmation
+
+      // SAME: Send user to calendar (you can later change this based on role)
+      navigate('/calendar');
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  };
 
   return (
     <div style={{ maxWidth: '300px', margin: '50px auto', textAlign: 'center' }}>
-      {/* The title and subtitle */}
       <h1>UniCalendar</h1>
       <h5>A fantastic calendar for busy students!</h5>
-
-       {/* The Login information*/}
       <h3>Login</h3>
       <form onSubmit={handleLogin}>
-        {/* Error message display */}
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-        {/* Username entry */}
         <div style={{ marginBottom: '10px' }}>
           <input 
             type="text"
@@ -38,8 +49,6 @@ function Login() {
             style={{ width: '100%', padding: '8px' }}
           />
         </div>
-
-        {/* Password entry */}
         <div style={{ marginBottom: '10px' }}>
           <input 
             type="password"
@@ -49,12 +58,9 @@ function Login() {
             style={{ width: '100%', padding: '8px' }}
           />
         </div>
-
-        {/* The submit button*/}
         <button type="submit" style={{ padding: '8px 16px' }}>
           Login
         </button>
-
       </form>
     </div>
   );
