@@ -56,6 +56,24 @@ function Login() {
         </button>
 
       </form>
+      
+      {/* Administrator Login Button */}
+      <div style={{ marginTop: '20px' }}>
+        <button 
+          onClick={() => navigate('/admin-login')}
+          style={{ 
+            padding: '8px 16px',
+            background: '#FF9800',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '14px'
+          }}
+        >
+          Administrator Login
+        </button>
+      </div>
     </div>
   );
 }

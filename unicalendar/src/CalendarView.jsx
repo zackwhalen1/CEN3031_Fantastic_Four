@@ -1,6 +1,7 @@
 import { useState } from 'react'; 
 import SearchEvents from './SearchEvents';
 import CreateEventModal from './CreateEventModal';
+import DayView from './DayView';
 
 function CalendarView() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -44,6 +45,9 @@ function CalendarView() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [editingEvent, setEditingEvent] = useState(null);
   const [modalPosition, setModalPosition] = useState(null);
+  const [showDayView, setShowDayView] = useState(false);
+  const [dayViewDate, setDayViewDate] = useState(null);
+  const [prefilledStartTime, setPrefilledStartTime] = useState('');
 
   // These are some made up events that I'm using to base how the sorting will work
   const testEvents = [
@@ -52,7 +56,81 @@ function CalendarView() {
     { date: '07/12/2025', month: 'August', startTime: '0:00', title: 'Brothers Birthday', color: 'green' },
     { date: '09/05/2025', month: 'September', startTime: '9:00', title: 'Senior Project Class', color: 'red' },
     { date: '09/02/2025', month: 'August', startTime: '8:30', title: 'COP Final Exam', color: 'blue' },
-    { date: '08/06/2025', month: 'August', startTime: '0:00', title: 'Moms Birthday', color: 'green' }
+    { date: '08/06/2025', month: 'August', startTime: '0:00', title: 'Moms Birthday', color: 'green' },
+    { date: '08/20/2025', month: 'August', startTime: '16:00', title: 'CEN Final Exam', color: 'yellow' },
+    { date: '07/08/2025', month: 'July', startTime: '18:00', title: 'Doctor Appointment', color: 'red' },
+    { date: '07/25/2025', month: 'July', startTime: '10:00', title: 'Family Dinner', color: 'red' },
+    { date: '09/19/2025', month: 'September', startTime: '11:00', title: 'Work Meeting', color: 'blue' },
+    { date: '09/10/2025', month: 'September', startTime: '8:30', title: 'Group Project Meeting', color: 'green' },
+    { date: '07/18/2025', month: 'July', startTime: '14:30', title: 'Math Class', color: 'purple' },
+    { date: '09/07/2025', month: 'September', startTime: '14:30', title: 'CEN Final Exam', color: 'yellow' },
+    { date: '09/11/2025', month: 'September', startTime: '8:30', title: 'Python Workshop', color: 'yellow' },
+    { date: '08/11/2025', month: 'August', startTime: '11:00', title: 'Soccer Game', color: 'green' },
+    { date: '07/16/2025', month: 'July', startTime: '20:00', title: 'Networking Event', color: 'green' },
+    { date: '09/28/2025', month: 'September', startTime: '18:00', title: 'Holiday', color: 'green' },
+    { date: '09/21/2025', month: 'September', startTime: '10:00', title: 'Doctor Appointment', color: 'yellow' },
+    { date: '07/31/2025', month: 'July', startTime: '13:00', title: 'Networking Event', color: 'yellow' },
+    { date: '08/09/2025', month: 'August', startTime: '14:30', title: 'Doctor Appointment', color: 'orange' },
+    { date: '08/30/2025', month: 'August', startTime: '11:00', title: 'Final Presentation', color: 'green' },
+    { date: '08/07/2025', month: 'August', startTime: '9:00', title: 'CEN Final Exam', color: 'red' },
+    { date: '08/14/2025', month: 'August', startTime: '20:00', title: 'Gym Session', color: 'orange' },
+    { date: '09/06/2025', month: 'September', startTime: '9:00', title: 'Final Presentation', color: 'orange' },
+    { date: '08/16/2025', month: 'August', startTime: '16:00', title: 'Dentist Appointment', color: 'purple' },
+    { date: '09/26/2025', month: 'September', startTime: '16:00', title: 'Holiday', color: 'yellow' },
+    { date: '09/08/2025', month: 'September', startTime: '13:00', title: 'Python Workshop', color: 'blue' },
+    { date: '07/15/2025', month: 'July', startTime: '8:30', title: 'Doctor Appointment', color: 'orange' },
+    { date: '07/06/2025', month: 'July', startTime: '16:00', title: 'COP Final Exam', color: 'blue' },
+    { date: '08/12/2025', month: 'August', startTime: '13:00', title: 'Soccer Game', color: 'blue' },
+    { date: '09/15/2025', month: 'September', startTime: '9:00', title: 'Python Workshop', color: 'orange' },
+    { date: '09/24/2025', month: 'September', startTime: '9:00', title: 'Doctor Appointment', color: 'orange' },
+    { date: '07/27/2025', month: 'July', startTime: '10:00', title: 'Holiday', color: 'blue' },
+    { date: '08/10/2025', month: 'August', startTime: '11:00', title: 'Soccer Game', color: 'orange' },
+    { date: '08/26/2025', month: 'August', startTime: '14:30', title: 'Networking Event', color: 'red' },
+    { date: '09/18/2025', month: 'September', startTime: '14:30', title: 'CEN Final Exam', color: 'green' },
+    { date: '08/08/2025', month: 'August', startTime: '14:30', title: 'Family Dinner', color: 'orange' },
+    { date: '09/17/2025', month: 'September', startTime: '14:30', title: 'Senior Project Class', color: 'blue' },
+    { date: '07/24/2025', month: 'July', startTime: '11:00', title: 'Doctor Appointment', color: 'green' },
+    { date: '07/26/2025', month: 'July', startTime: '8:00', title: 'Python Workshop', color: 'red' },
+    { date: '08/22/2025', month: 'August', startTime: '9:00', title: 'Gym Session', color: 'yellow' },
+    { date: '08/05/2025', month: 'August', startTime: '8:30', title: 'Networking Event', color: 'yellow' },
+    { date: '08/21/2025', month: 'August', startTime: '18:00', title: 'Doctor Appointment', color: 'green' },
+    { date: '07/14/2025', month: 'July', startTime: '16:00', title: 'Group Project Meeting', color: 'purple' },
+    { date: '07/22/2025', month: 'July', startTime: '10:00', title: 'Math Class', color: 'green' },
+    { date: '08/01/2025', month: 'August', startTime: '8:30', title: 'Gym Session', color: 'blue' },
+    { date: '08/04/2025', month: 'August', startTime: '13:00', title: 'Doctor Appointment', color: 'green' },
+    { date: '08/03/2025', month: 'August', startTime: '16:00', title: 'Career Fair', color: 'red' },
+    { date: '09/23/2025', month: 'September', startTime: '20:00', title: 'Senior Project Class', color: 'purple' },
+    { date: '08/23/2025', month: 'August', startTime: '20:00', title: 'Python Workshop', color: 'green' },
+    { date: '07/17/2025', month: 'July', startTime: '11:00', title: 'Final Presentation', color: 'green' },
+    { date: '09/13/2025', month: 'September', startTime: '16:00', title: 'Final Presentation', color: 'orange' },
+    { date: '07/19/2025', month: 'July', startTime: '13:00', title: 'Dentist Appointment', color: 'green' },
+    { date: '07/28/2025', month: 'July', startTime: '14:30', title: 'Work Meeting', color: 'green' },
+    { date: '09/03/2025', month: 'September', startTime: '10:00', title: 'JavaScript Study', color: 'purple' },
+    { date: '07/09/2025', month: 'July', startTime: '20:00', title: 'Career Fair', color: 'blue' },
+    { date: '09/20/2025', month: 'September', startTime: '9:00', title: 'Doctor Appointment', color: 'green' },
+    { date: '08/13/2025', month: 'August', startTime: '13:00', title: 'Math Class', color: 'red' },
+    { date: '09/14/2025', month: 'September', startTime: '14:30', title: 'Group Project Meeting', color: 'purple' },
+    { date: '07/07/2025', month: 'July', startTime: '18:00', title: 'Group Project Meeting', color: 'green' },
+    { date: '08/24/2025', month: 'August', startTime: '9:00', title: 'Senior Project Class', color: 'blue' },
+    { date: '08/18/2025', month: 'August', startTime: '20:00', title: 'Holiday', color: 'orange' },
+    { date: '07/13/2025', month: 'July', startTime: '18:00', title: 'Networking Event', color: 'red' },
+    { date: '09/04/2025', month: 'September', startTime: '11:00', title: 'Dentist Appointment', color: 'purple' },
+    { date: '07/23/2025', month: 'July', startTime: '13:00', title: 'Group Project Meeting', color: 'yellow' },
+    { date: '08/02/2025', month: 'August', startTime: '9:00', title: 'JavaScript Study', color: 'blue' },
+    { date: '09/09/2025', month: 'September', startTime: '8:00', title: 'Doctor Appointment', color: 'green' },
+    { date: '08/25/2025', month: 'August', startTime: '8:30', title: 'Career Fair', color: 'orange' },
+    { date: '09/22/2025', month: 'September', startTime: '8:00', title: 'Gym Session', color: 'green' },
+    { date: '07/10/2025', month: 'July', startTime: '10:00', title: 'Gym Session', color: 'blue' },
+    { date: '07/21/2025', month: 'July', startTime: '8:30', title: 'COP Final Exam', color: 'purple' },
+    { date: '07/30/2025', month: 'July', startTime: '8:30', title: 'Career Fair', color: 'green' },
+    { date: '08/28/2025', month: 'August', startTime: '10:00', title: 'Doctor Appointment', color: 'red' },
+    { date: '09/12/2025', month: 'September', startTime: '10:00', title: 'Group Project Meeting', color: 'blue' },
+    { date: '09/01/2025', month: 'September', startTime: '14:30', title: 'Math Class', color: 'green' },
+    { date: '07/20/2025', month: 'July', startTime: '8:30', title: 'JavaScript Study', color: 'red' },
+    { date: '08/17/2025', month: 'August', startTime: '10:00', title: 'Senior Project Class', color: 'yellow' },
+    { date: '07/11/2025', month: 'July', startTime: '9:00', title: 'Dentist Appointment', color: 'blue' },
+    { date: '08/27/2025', month: 'August', startTime: '9:00', title: 'Doctor Appointment', color: 'purple' },
+    { date: '07/29/2025', month: 'July', startTime: '11:00', title: 'Holiday', color: 'orange' }
   ];
 
   // Filtering events by what you would like to search by
@@ -72,13 +150,12 @@ function CalendarView() {
     return false;
   });
 
-  // when a user clicks a day
-  const handleDayClick = (day, event) => {
+  // when a user double clicks a day
+  const handleDayDoubleClick = (day, event) => {
     if (!day) return;
     const clickedDate = new Date(year, month, day);
-    setSelectedDate(clickedDate);
-    setModalPosition({ x: event.clientX, y: event.clientY });
-    setShowModal(true);
+    setDayViewDate(clickedDate);
+    setShowDayView(true);
   };
 
   // Add event or update if editing
@@ -113,33 +190,42 @@ function CalendarView() {
     setShowModal(true);
   };
 
+  // Day view handlers
+  const handleCloseDayView = () => {
+    setShowDayView(false);
+    setDayViewDate(null);
+  };
+
+  const handleDayViewEdit = (event) => {
+    setShowDayView(false);
+    setEditingEvent(event);
+    setModalPosition(null);
+    setShowModal(true);
+  };
+
+  const handleDayViewDelete = (event) => {
+    deleteEvent(event);
+  };
+
+  const handleDayViewDateChange = (newDate) => {
+    setDayViewDate(newDate);
+  };
+
+  const handleDayViewCreateEvent = (date, startTime) => {
+    setSelectedDate(date);
+    setEditingEvent(null);
+    setModalPosition(null);
+    setPrefilledStartTime(startTime);
+    setShowModal(true);
+  };
+
   //////
 
   return (
-    <div style={{
-        border: '2px solid #444',
-        padding: '10px',
-        marginTop: '10px',
-        borderRadius: '8px'
-      }}>
-      {/*The above div style is for the box surrounding the whole calendar*/}
-
-      <div style={{
-        border: '2px solid #444',
-        padding: '10px',
-        marginTop: '10px',
-        borderRadius: '8px'
-      }}>
-      {/* This is the Search Feature */}
-      <h2>Search</h2>
-      <SearchEvents 
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        searchType={searchType}
-        setSearchType={setSearchType}
-      />
-      </div>
+    <div>
+      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Unicalendar</h1>
       
+<<<<<<< Updated upstream
       {/*This is the filtered events. It starts with the total list of testEvents and then as you search it filters them out.*/}
       <div style={{
         border: '2px solid #444',
@@ -151,9 +237,59 @@ function CalendarView() {
         {filteredEvents.map((event, index) => (
           <div key={index}>
             {event.date}: {event.month}: {event.startTime}: {event.title} ({event.color})
+=======
+      {/* Main container with two columns */}
+      <div style={{ display: 'flex', gap: '20px' }}>
+        
+        {/* Left sidebar with Search and Calendar Events */}
+        <div style={{
+          flex: '0 0 350px', // Fixed width for left sidebar
+          border: '2px solid #444',
+          padding: '15px',
+          borderRadius: '8px',
+          height: 'fit-content'
+        }}>
+          
+          {/* Search Feature */}
+          <div style={{
+            border: '2px solid #444',
+            padding: '10px',
+            marginBottom: '15px',
+            borderRadius: '8px'
+          }}>
+            <h2>Search</h2>
+            <SearchEvents 
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              searchType={searchType}
+              setSearchType={setSearchType}
+            />
+>>>>>>> Stashed changes
           </div>
-        ))}
-      </div>
+          
+          {/* Calendar Events */}
+          <div style={{
+            border: '2px solid #444',
+            padding: '10px',
+            borderRadius: '8px'
+          }}>
+            <h4>Calendar Events</h4>
+            {filteredEvents.map((event, index) => (
+              <div key={index}>
+                {event.date}: {event.month}: {event.startTime}: <span style={{ color: event.color }}>{event.title}</span>
+              </div>
+            ))}
+          </div>
+          
+        </div>
+        
+        {/* Right side with calendar */}
+        <div style={{
+          flex: '1', // Takes up remaining space
+          border: '2px solid #444',
+          padding: '10px',
+          borderRadius: '8px'
+        }}>
 
       <h2>
         {/*This displays the current date*/} 
@@ -188,10 +324,10 @@ function CalendarView() {
         {calendarCells.map((day, index) => (
           <div 
             key={index} 
-            onClick={(e) => handleDayClick(day, e)}
+            onDoubleClick={(e) => handleDayDoubleClick(day, e)}
             onContextMenu={(e) => {
               e.preventDefault();
-              handleDayClick(day, e);
+              handleDayDoubleClick(day, e);
             }}
             style={{
               height: '100px',
@@ -242,13 +378,32 @@ function CalendarView() {
             defaultDate={selectedDate}
             editingEvent={editingEvent}
             position={modalPosition}
+            prefilledStartTime={prefilledStartTime}
             onClose={() => {
               setShowModal(false);
               setEditingEvent(null);
+              setPrefilledStartTime('');
             }}
             onSave={handleSaveEvent}
           />
         )}
+
+        {/* Day View */}
+        {showDayView && dayViewDate && (
+          <DayView
+            selectedDate={dayViewDate}
+            events={events}
+            testEvents={testEvents}
+            onClose={handleCloseDayView}
+            onEditEvent={handleDayViewEdit}
+            onDeleteEvent={handleDayViewDelete}
+            onDateChange={handleDayViewDateChange}
+            onCreateEvent={handleDayViewCreateEvent}
+          />
+        )}
+        </div>
+        
+      </div>
     </div>
   );
 }
