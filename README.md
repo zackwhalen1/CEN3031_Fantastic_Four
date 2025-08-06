@@ -36,10 +36,12 @@ npm start
 If you would like to login as a student, you can use this login information:
 
 username: student@ufl.edu
+
 password: password
 
 
 If you would like to login as an administrator, click on the Administrator Login button and use this login information:
 
 username: Admin
+
 password: password
