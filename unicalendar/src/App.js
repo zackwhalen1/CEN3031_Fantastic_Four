@@ -4,6 +4,10 @@ import SignUp from './SignUp.jsx';
 
 import Login from './Login.jsx';
 
+import AdminLogin from './AdminLogin.jsx';
+
+import AdminDashboard from './AdminDashboard.jsx';
+
 import Logout from './logout.jsx';
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
@@ -39,6 +43,46 @@ function App() {
               <Login />
 
             </div>
+
+          } 
+
+        />
+
+        <Route 
+
+          path="/admin-login" 
+
+          element={
+
+            <div style={{ textAlign: 'center' }}>
+
+              <AdminLogin />
+
+            </div>
+
+          } 
+
+        />
+
+        <Route 
+
+          path="/admin-panel" 
+
+          element={
+
+            <AdminDashboard />
+
+          } 
+
+        />
+
+        <Route 
+
+          path="/admin-dashboard" 
+
+          element={
+
+            <AdminDashboard />
 
           } 
 
