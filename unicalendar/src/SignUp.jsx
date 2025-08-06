@@ -54,6 +54,24 @@ function SignUp() {
                     Sign Up
                 </button>
             </form>
+            
+            {/* Go to Login Button */}
+            <div style={{ marginTop: '20px' }}>
+                <button 
+                    onClick={() => navigate('/login')}
+                    style={{ 
+                        padding: '8px 16px',
+                        background: '#4CAF50',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '14px'
+                    }}
+                >
+                    Go to Login
+                </button>
+            </div>
         </div>
     );
 }
