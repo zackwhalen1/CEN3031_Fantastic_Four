@@ -7,7 +7,7 @@ function Login() {
   const [password, setPassword] = useState(''); //Doesn't do anything right now
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate(); //Object that handles changing web pages
-  const { login } = useAuth();
+  const { login, loginHardcodedStudent } = useAuth();
 
   const handleLogin = (e) => { //Function that changes to the calendar view when the login button is pressed
   e.preventDefault();
@@ -15,7 +15,8 @@ function Login() {
   
   // Check for hardcoded student login first
   if (username === 'student@ufl.edu' && password === 'password') {
-    // Direct login for hardcoded student
+    // Set authentication state for hardcoded student
+    loginHardcodedStudent();
     navigate('/calendar');
     return;
   }
@@ -89,3 +90,4 @@ function Login() {
 }
 
 export default Login;
+
