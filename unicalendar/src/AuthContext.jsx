@@ -17,12 +17,21 @@ export function AuthProvider({ children }) {
         return signInWithEmailAndPassword(auth, email, password);
     }
 
+    const loginHardcodedStudent = () => {
+        const mockUser = {
+            email: 'student@ufl.edu',
+            uid: 'hardcoded-student',
+            displayName: 'Student User'
+        };
+        setCurrentUser(mockUser);
+    }
+
     const logout = () => {
         return signOut(auth);
     }
     useEffect(() => onAuthStateChanged(auth, setCurrentUser), []);
     return (
-        <AuthContext.Provider value={{currentUser, signup, login, logout}}>
+        <AuthContext.Provider value={{currentUser, signup, login, loginHardcodedStudent, logout}}>
             {children}
         </AuthContext.Provider>
     );
